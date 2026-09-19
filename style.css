@@ -542,4 +542,36 @@ body {
         min-height: 64px;
         padding: 8px;
     }
+
+    .topbar {
+        flex-wrap: wrap;
+        padding: 12px 14px;
+        gap: 8px;
+    }
+    .top-left {
+        order: 1;
+    }
+    .top-right {
+        order: 2;
+        margin-left: auto;
+    }
+    .top-center {
+        order: 3;
+        flex-basis: 100%;
+    }
+    .top-center h1 {
+        font-size: 18px;
+    }
+    .menu-centralizado {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+    }
+    .download-btn {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+    .btn-gear {
+        font-size: 20px;
+    }
 }
