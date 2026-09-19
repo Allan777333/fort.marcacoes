@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fort Marcações</title>
+
+    <!-- PWA -->
+    <meta name="theme-color" content="#e63946" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="icon-192.png" type="image/png" />
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="style.css" />
+    <!-- Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
+    <!-- jsPDF + AutoTable (PDF bonito) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body>
+    <!-- Topbar -->
+    <div class="topbar">
+        <div class="top-left">
+            <div class="logo-circle"><img src="icon-192.png" alt="Fort Marcações" /></div>
+        </div>
+
+        <div class="top-center">
+            <h1>Fort Marcações</h1>
+            <nav class="menu-centralizado">
+                <button class="btn-link" onclick="showPage('agendaPage')">Agenda</button>
+                <button class="btn-link" onclick="showPage('listaPage')">Lista</button>
+                <button class="btn-link" onclick="showPage('financeiroPage')">Financeiro</button>
+            </nav>
+        </div>
+
+        <div class="top-right">
+            <!-- Instalar PWA -->
+            <button id="downloadAppBtn" class="download-btn" disabled title="Disponível quando o app puder ser instalado">📲 Baixar App</button>
+            <!-- Configurações -->
+            <button class="btn-gear" title="Configurações" onclick="showPage('configPage')">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div class="main-container">
+        <!-- Página Agenda -->
+        <div id="agendaPage" class="page">
+            <div class="agenda-layout">
+                <!-- Calendário -->
+                <section class="calendar-container card" aria-label="Calendário">
+                    <div class="card-header">
+                        <button class="nav-btn" onclick="prevMonth()" aria-label="Mês anterior">◀</button>
+                        <h2 id="monthYear"></h2>
+                        <button class="nav-btn" onclick="nextMonth()" aria-label="Próximo mês">▶</button>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid" role="grid" aria-label="Dias do mês"></div>
+                </section>
+
+                <!-- Formulário -->
+                <section class="form-container card" aria-label="Formulário de agendamento">
+                    <h2>Marcar / Editar Agendamento</h2>
+                    <form id="appointmentForm" class="form" novalidate>
+                        <input type="hidden" id="editId" />
+
+                        <label for="name">Cliente</label>
+                        <input id="name" name="name" type="text" placeholder="Nome da cliente" required maxlength="80" />
+
+                        <label for="phone">Telefone</label>
+                        <input id="phone" name="phone" type="tel" placeholder="(11) 99999-9999" required maxlength="15" inputmode="numeric" pattern="\(\d{2}\)\s\d{5}-\d{4}" />
+
+                        <label for="date">Data</label>
+                        <input id="date" name="date" type="date" required inputmode="numeric" />
+
+                        <label for="time">Hora</label>
+                        <input id="time" name="time" type="time" required inputmode="numeric" />
+
+                        <label for="title">Serviço</label>
+                        <input id="title" name="title" type="text" placeholder="Ex: Manicure + alongamento" required maxlength="120" />
+
+                        <label for="notes">Observações (opcional)</label>
+                        <textarea id="notes" name="notes" placeholder="Observações (opcional)" maxlength="500"></textarea>
+
+                        <div class="form-actions">
+                            <button type="submit" class="primary-btn">Salvar</button>
+                            <button type="reset" class="secondary-btn">Limpar</button>
+                        </div>
+                    </form>
+                    <div id="formMessage" class="form-message" aria-live="assertive" hidden></div>
+                </section>
+            </div>
+
+            <!-- Agendamentos do dia -->
+            <section class="day-panel card">
+                <h3 id="selectedDateTitle">Selecione uma data</h3>
+                <ul class="appointments-list" id="appointmentsDayList" aria-live="polite"></ul>
+            </section>
+        </div>
+
+        <!-- Página Lista -->
+        <div id="listaPage" class="page hidden">
+            <section class="card">
+                <h2>Lista de Marcações</h2>
+                <ul id="fullAppointmentsList" class="appointments-list"></ul>
+                <div class="list-actions">
+                    <button class="primary-btn" onclick="downloadPDF()"><i class="fa-solid fa-file-pdf"></i> Baixar
+                        PDF</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Página Financeiro -->
+        <div id="financeiroPage" class="page hidden">
+            <div class="agenda-layout">
+                <!-- Formulário -->
+                <section class="form-container card" aria-label="Formulário financeiro">
+                    <h2>Nova Entrada / Saída</h2>
+                    <form id="financeForm" class="form" novalidate>
+                        <label for="finTipo">Tipo</label>
+                        <select id="finTipo" name="finTipo" required>
+                            <option value="entrada">Entrada (dinheiro que entrou)</option>
+                            <option value="saida">Saída (dinheiro que saiu)</option>
+                        </select>
+
+                        <label for="finDate">Data</label>
+                        <input id="finDate" name="finDate" type="date" required />
+
+                        <label for="finDesc">Descrição</label>
+                        <input id="finDesc" name="finDesc" type="text" placeholder="Ex: Manicure da cliente Ana" required maxlength="120" />
+
+                        <label for="finValor">Valor (R$)</label>
+                        <input id="finValor" name="finValor" type="number" step="0.01" min="0" placeholder="0,00" required />
+
+                        <label for="finCusto">Custo (R$) (opcional)</label>
+                        <input id="finCusto" name="finCusto" type="number" step="0.01" min="0" placeholder="0,00" />
+
+                        <label for="finDuracao">Duração (opcional)</label>
+                        <input id="finDuracao" name="finDuracao" type="text" placeholder="Ex: 30 min" maxlength="30" />
+
+                        <label>Total</label>
+                        <div id="finTotalPreview" class="fin-total-preview">R$ 0,00</div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="primary-btn">Salvar</button>
+                            <button type="reset" class="secondary-btn">Limpar</button>
+                        </div>
+                    </form>
+                    <div id="financeMessage" class="form-message" aria-live="assertive" hidden></div>
+                </section>
+
+                <!-- Resumo -->
+                <section class="calendar-container card" aria-label="Resumo financeiro">
+                    <h2>Resumo</h2>
+                    <div class="fin-summary">
+                        <div class="fin-summary-item fin-entrada">
+                            <span>Total de Entradas</span>
+                            <strong id="finTotalEntradas">R$ 0,00</strong>
+                        </div>
+                        <div class="fin-summary-item fin-saida">
+                            <span>Total de Saídas</span>
+                            <strong id="finTotalSaidas">R$ 0,00</strong>
+                        </div>
+                        <div class="fin-summary-item fin-saldo">
+                            <span>Saldo</span>
+                            <strong id="finSaldo">R$ 0,00</strong>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="day-panel card">
+                <h3>Lançamentos</h3>
+                <ul id="financeList" class="appointments-list" aria-live="polite"></ul>
+                <div class="list-actions">
+                    <button class="primary-btn" onclick="downloadFinancePDF()"><i class="fa-solid fa-file-pdf"></i> Baixar
+                        PDF</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Página Configurações -->
+        <div id="configPage" class="page hidden">
+            <section class="card">
+                <h2>Configurações</h2>
+
+                <section class="info-block">
+                    <h3>Cor do tema</h3>
+                    <p>Escolha a cor do aplicativo. A cor escolhida fica salva no aparelho e continua a mesma mesmo depois de atualizar a página.</p>
+                    <div class="color-palette" id="colorPalette">
+                        <button class="color-swatch" data-color="rosa" style="background: linear-gradient(90deg, #ff2d95, #ff5bb3);" title="Rosa" onclick="applyThemeColor('rosa')"></button>
+                        <button class="color-swatch" data-color="roxo" style="background: linear-gradient(90deg, #9b5de5, #c77dff);" title="Roxo" onclick="applyThemeColor('roxo')"></button>
+                        <button class="color-swatch" data-color="azul" style="background: linear-gradient(90deg, #3a86ff, #6fa8ff);" title="Azul" onclick="applyThemeColor('azul')"></button>
+                        <button class="color-swatch" data-color="verde" style="background: linear-gradient(90deg, #2ec4b6, #6fdfd3);" title="Verde" onclick="applyThemeColor('verde')"></button>
+                        <button class="color-swatch" data-color="laranja" style="background: linear-gradient(90deg, #ff8800, #ffb347);" title="Laranja" onclick="applyThemeColor('laranja')"></button>
+                        <button class="color-swatch" data-color="vermelho" style="background: linear-gradient(90deg, #e63946, #ff6b6b);" title="Vermelho" onclick="applyThemeColor('vermelho')"></button>
+                    </div>
+
+                    <p class="muted" style="margin-top:16px;">Ou escolha até 2 cores personalizadas:</p>
+                    <div class="custom-color-picker">
+                        <label for="customColor1">Cor 1</label>
+                        <input type="color" id="customColor1" value="#e63946" />
+                        <label for="customColor2">Cor 2</label>
+                        <input type="color" id="customColor2" value="#ff6b6b" />
+                        <button type="button" class="secondary-btn" onclick="applyCustomThemeColor()">Aplicar</button>
+                    </div>
+                </section>
+
+                <section class="info-block">
+                    <h3>Onde seus dados ficam salvos</h3>
+                    <p>
+                        Todos os agendamentos ficam salvos diretamente no seu aparelho, usando a memória local do navegador (
+                        <strong>localStorage</strong>). Isso significa que:
+                    </p>
+                    <ul>
+                        <li>Se você fechar o app e abrir de novo, seus dados continuam lá normalmente.</li>
+                        <li>Os dados são preservados mesmo se você desligar o celular ou computador.</li>
+                        <li>Se você abrir em outro celular ou navegador, os agendamentos <strong>não aparecerão</strong>, porque cada aparelho salva os dados separadamente.</li>
+                        <li>Se limpar os dados ou cache do navegador, ou desinstalar o app, os agendamentos serão apagados.
+                        </li>
+                    </ul>
+                    <p>
+                        Para manter uma cópia de segurança, utilize o botão <strong>Baixar PDF</strong> na página
+                        <em>Lista</em>.
+                    </p>
+                </section>
+
+                <section class="info-block">
+                    <h3>Instalar este app (sem loja)</h3>
+                    <p>
+                        Você pode instalar este app no seu celular ou computador como atalho de tela cheia (PWA). Toque no botão <strong>📲 Baixar App</strong> no topo. O botão fica ativo quando o navegador permitir a instalação. Também é possível usar
+                        a opção <em>“Adicionar à tela inicial”</em> do navegador.
+                    </p>
+                </section>
+            </section>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação (editar/excluir) -->
+    <div id="confirmModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <div class="modal-content card">
+            <h3 id="confirmTitle">Confirmar ação</h3>
+            <p id="confirmText">Tem certeza?</p>
+            <div class="modal-actions">
+                <button id="confirmYes" class="primary-btn">Confirmar</button>
+                <button id="confirmNo" class="secondary-btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">© 2026 Fort Marcações</footer>
+
+    <!-- Script principal -->
+    <script src="script.js"></script>
+</body>
+
+</html>
