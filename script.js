@@ -1,11 +1,11 @@
-// =================== Persistência ===================
+// Persistência 
 const STORAGE_KEY = 'lt_nail_bookings_v3'; // mantém dados existentes
 
-// =================== Estado ===================
+// Estado 
 let bookings = []; // {id, name, phone(11), title, date(YYYY-MM-DD), time(HH:MM), notes}
 let selectedDate = new Date();
 
-// ===== Modal de confirmação =====
+// Modal de confirmação
 let pendingConfirmAction = null;
 const confirmModal = () => document.getElementById('confirmModal');
 const confirmText = () => document.getElementById('confirmText');
@@ -31,9 +31,9 @@ function wireConfirmButtons() {
     confirmNo().onclick = closeConfirm;
 }
 
-// =================== Utilitários ===================
+// Utilitários
 
-// ❗ NOVO: converte Date -> "YYYY-MM-DD" usando campos locais (sem fuso)
+// converte Date -> "YYYY-MM-DD" (sem fuso)
 function dateToISO(date) {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -41,7 +41,7 @@ function dateToISO(date) {
     return `${y}-${m}-${d}`;
 }
 
-// ❗ NOVO: converte "YYYY-MM-DD" -> Date local (sem UTC)
+// converte "YYYY-MM-DD" -> (sem UTC)
 function isoToLocalDate(iso) {
     const [y, m, d] = iso.split('-').map(Number);
     return new Date(y, m - 1, d);
@@ -67,7 +67,7 @@ function maskToDigits(mask) {
     return onlyDigits(mask).slice(0, 11);
 }
 
-// Evita que texto digitado pelo usuário vire HTML na tela (segurança simples)
+// Evita que texto digitado pelo usuário vire HTML na tela
 function escapeHTML(text) {
     const div = document.createElement('div');
     div.textContent = text || '';
@@ -111,7 +111,7 @@ function formatDateBR(iso) {
     return `${d}/${m}/${y}`;
 }
 
-// ===== WhatsApp: abrir chat direto (sem mensagem automática) =====
+// WhatsApp
 function openWhatsApp(phoneDigits11) {
     const digits = onlyDigits(phoneDigits11);
     if (!digits || digits.length !== 11) {
@@ -122,7 +122,7 @@ function openWhatsApp(phoneDigits11) {
     window.open(url, "_blank");
 }
 
-// =================== Tema (paleta de cores) ===================
+// Tema (paleta de cores)
 const THEME_KEY = 'lt_theme_color';
 const THEMES = {
     rosa: { c1: '#ff2d95', c2: '#ff5bb3' },
@@ -168,7 +168,7 @@ function applyCustomThemeColor() {
     localStorage.setItem(THEME_KEY, JSON.stringify({ type: 'custom', c1, c2 }));
 }
 
-// Converte "#rrggbb" (ou "#rgb") em [r, g, b] para uso no PDF
+
 function hexToRgbArray(hex) {
     let h = (hex || '').replace('#', '');
     if (h.length === 3) h = h.split('').map(c => c + c).join('');
@@ -177,7 +177,7 @@ function hexToRgbArray(hex) {
     return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
 }
 
-// Lê a cor de tema atual (salva) para usar também no cabeçalho do PDF
+// Le a cor de tema atual para usaR no PDF
 function getCurrentThemeColorHex() {
     const raw = localStorage.getItem(THEME_KEY);
     let saved = null;
@@ -216,7 +216,7 @@ function loadThemeColor() {
     applyThemeColor(key);
 }
 
-// =================== Storage ===================
+// Storage
 function loadBookings() {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -231,7 +231,7 @@ function saveBookings() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings));
 }
 
-// =================== Páginas ===================
+// Páginas
 function showPage(pageId) {
     document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
     document.getElementById(pageId).classList.remove("hidden");
@@ -239,7 +239,7 @@ function showPage(pageId) {
     if (pageId === "financeiroPage") renderFinanceiro();
 }
 
-// =================== Calendário ===================
+// Calendário
 function renderCalendar() {
     const grid = document.getElementById("calendarGrid");
     if (!grid) return;
@@ -264,14 +264,14 @@ function renderCalendar() {
         grid.appendChild(el);
     });
 
-    // Espaços em branco antes do 1º dia
+    // Espaços em branco
     for (let i = 0; i < firstDay; i++) {
         const empty = document.createElement("div");
         empty.className = "weekday empty";
         grid.appendChild(empty);
     }
 
-    // Dias do mês
+    // Dia do mês
     for (let d = 1; d <= daysInMonth; d++) {
         const date = new Date(year, month, d); // LOCAL
         const cell = document.createElement("div");
@@ -365,10 +365,10 @@ function renderDayList() {
     });
 }
 
-// =================== Formulário ===================
+// Formulário
 const form = document.getElementById("appointmentForm");
 
-// Capitalização automática
+
 ["name", "title", "notes"].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
@@ -379,7 +379,7 @@ const form = document.getElementById("appointmentForm");
     }
 });
 
-// Telefone máscara
+// Telefone
 const phoneEl = document.getElementById("phone");
 if (phoneEl) {
     phoneEl.addEventListener("input", (e) => {
@@ -430,7 +430,7 @@ form.addEventListener("submit", (e) => {
 
     saveBookings();
     renderCalendar();
-    // ❗ Troca crítica: cria Date LOCAL a partir do ISO do input
+    // cria Date LOCAL a partir do ISO do input
     selectDate(isoToLocalDate(dateVal));
 
     e.target.reset();
@@ -497,7 +497,7 @@ function deleteBooking(id) {
     }
 }
 
-// =================== Lista completa ===================
+// Lista completa
 function renderFullList() {
     const list = document.getElementById("fullAppointmentsList");
     if (!list) return;
@@ -533,7 +533,7 @@ function renderFullList() {
     });
 }
 
-// =================== Financeiro ===================
+// Financeiro
 const FIN_STORAGE_KEY = 'lt_financeiro_v1';
 let finEntries = [];
 
@@ -743,7 +743,7 @@ function downloadFinancePDF() {
     doc.save('fort_marcacoes_financeiro.pdf');
 }
 
-// =================== PDF (jsPDF + AutoTable) ===================
+// PDF
 function downloadPDF() {
     if (!bookings.length) {
         alert('Não há marcações para exportar.');
@@ -816,7 +816,7 @@ function downloadPDF() {
     doc.save('fort_marcacoes.pdf');
 }
 
-// =================== PWA: Service Worker & Instalação ===================
+// PWA
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('service-worker.js').catch(() => {});
@@ -856,7 +856,7 @@ function setupInstallButton() {
     }
 }
 
-// =================== Inicialização ===================
+// Inicialização
 function init() {
     loadThemeColor();
     loadBookings();
@@ -865,7 +865,7 @@ function init() {
     registerServiceWorker();
     setupInstallButton();
 
-    // Placeholder do ano atual no campo data (sem dia/mês)
+    
     const dateInput = document.getElementById("date");
     if (dateInput) {
         const yyyy = selectedDate.getFullYear();
