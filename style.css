@@ -21,7 +21,7 @@ body {
 }
 
 
-/* Topbar */
+// Topbar
 
 .topbar {
     display: flex;
@@ -61,7 +61,7 @@ body {
 }
 
 
-/* Logo */
+// Logo
 
 .logo-circle {
     width: 48px;
@@ -82,7 +82,7 @@ body {
 }
 
 
-/* Container */
+// Container
 
 .main-container {
     max-width: var(--max-width);
@@ -91,7 +91,7 @@ body {
 }
 
 
-/* Layout lado a lado */
+// Layout lado a lado
 
 .agenda-layout {
     display: flex;
@@ -111,7 +111,7 @@ body {
 }
 
 
-/* Cards */
+// Cards
 
 .card {
     background: var(--card);
@@ -123,7 +123,7 @@ body {
 }
 
 
-/* Header do card do calendário */
+// Header do card do calendário
 
 .card-header {
     display: flex;
@@ -141,7 +141,7 @@ body {
 }
 
 
-/* Formulário */
+// Formulário
 
 .form label {
     display: block;
@@ -180,7 +180,7 @@ body {
 }
 
 
-/* telefone invalido */
+// telefone invalido
 
 .form input.invalid {
     border-color: #ff4d6d;
@@ -188,7 +188,7 @@ body {
 }
 
 
-/* mensagem do formulario */
+// mensagem do formulario
 
 .form-message {
     margin-top: 8px;
@@ -196,7 +196,7 @@ body {
 }
 
 
-/* Calendar */
+// Calendar
 
 .calendar-grid {
     display: grid;
@@ -232,7 +232,7 @@ body {
 }
 
 
-/* bolinha rosa no dia com agendamento */
+// bolinha rosa no dia com agendamento
 
 .day-cell.has-event .dot {
     width: 8px;
@@ -245,7 +245,7 @@ body {
 }
 
 
-/* Appointments */
+// Appointments
 
 .appointments-list {
     list-style: none;
@@ -299,7 +299,7 @@ body {
 }
 
 
-/* Buttons */
+// Buttons
 
 .primary-btn {
     background: linear-gradient(90deg, var(--pink-1), var(--pink-2));
@@ -354,7 +354,7 @@ body {
 }
 
 
-/* Page control */
+// Page control
 
 .page.hidden {
     display: none;
@@ -366,7 +366,7 @@ body {
 }
 
 
-/* Info blocks em Configurações */
+// Info blocks em Configurações
 
 .info-block {
     margin-top: 12px;
@@ -386,7 +386,7 @@ body {
 }
 
 
-/* Paleta de cores (Configurações) */
+// Paleta de cores (Configurações)
 
 .color-palette {
     display: flex;
@@ -430,7 +430,7 @@ body {
 }
 
 
-/* Financeiro */
+// Financeiro
 
 .fin-total-preview {
     margin-top: 4px;
@@ -493,7 +493,7 @@ body {
 }
 
 
-/* Modal */
+// Modal
 
 .modal {
     position: fixed;
@@ -516,7 +516,7 @@ body {
 }
 
 
-/* Footer */
+// Footer
 
 .footer {
     text-align: center;
@@ -525,7 +525,7 @@ body {
 }
 
 
-/* Responsividade */
+// Responsividade
 
 @media (max-width: 768px) {
     .agenda-layout {
